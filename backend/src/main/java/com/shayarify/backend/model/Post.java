@@ -2,6 +2,9 @@ package com.shayarify.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -22,4 +25,7 @@ public class Post {
 
     @ManyToOne
     private User user;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 }
