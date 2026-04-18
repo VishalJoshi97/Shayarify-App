@@ -20,7 +20,7 @@ public class Message {
     private Long senderId;
     private Long receiverId;
 
-    @Column(columnDefinition = "TEXT")
+//    @Column(columnDefinition = "TEXT")
     private String content;
 
     private LocalDateTime timestamp;
