@@ -1,15 +1,18 @@
 import React, { createContext, useEffect, useState, ReactNode } from "react";
-import { getToken, saveToken, removeToken } from "../utils/storage";
+import {getToken, saveToken, removeToken, getUser, saveUser,removeUser} from "../utils/storage";
+import {User} from "@/app/src/types/user";
 
 type AuthContextType = {
     token: string | null;
-    loading: boolean; // 🔥 NEW
-    login: (token: string) => Promise<void>;
+    user: User | null; // 🔥 ADD THIS
+    loading: boolean;
+    login: (token: string, user: User) => Promise<void>; // 🔥 update
     logout: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextType>({
     token: null,
+    user: null,
     loading: true,
     login: async () => {},
     logout: async () => {},
@@ -18,33 +21,42 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true); // 🔥 NEW
+    const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        const loadToken = async () => {
+        const loadAuth = async () => {
             try {
-                const stored = await getToken();
-                if (stored) setToken(stored);
+                const storedToken = await getToken();
+                const storedUser = await getUser();
+
+                if (storedToken) setToken(storedToken);
+                if (storedUser) setUser(storedUser); // 🔥 IMPORTANT
             } catch (e) {
-                console.log("❌ AsyncStorage error:", e);
+                console.log("AsyncStorage error:", e);
             } finally {
-                setLoading(false); // ✅ ALWAYS runs
+                setLoading(false);
             }
         };
 
-        loadToken();
+        loadAuth();
     }, []);
-    const login = async (token: string) => {
+
+    const login = async (token: string,user: User) => {
         await saveToken(token);
+        await saveUser(user);
         setToken(token);
+        setUser(user); //store user
     };
 
     const logout = async () => {
         await removeToken();
+        await removeUser(); // 🔥 REMOVE USER
         setToken(null);
+        setUser(null);
     };
 
     return (
-        <AuthContext.Provider value={{ token, loading, login, logout }}>
+        <AuthContext.Provider value={{ token,user, loading, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
