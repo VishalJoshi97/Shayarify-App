@@ -1,6 +1,6 @@
 import client from "./client";
 
-export const loginApi = (data: { email: string; password: string }) =>
+export const loginApi = (data: { email: string; password: string}) =>
     client.post("/auth/login", data);
 
 export const registerApi = (data: any) =>
