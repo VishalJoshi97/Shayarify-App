@@ -24,10 +24,9 @@ export default function TabsLayout() {
     // ✅ Logged in
     return (
         <Tabs>
-            <Tabs.Screen name="home" />
             <Tabs.Screen name="feed" />
-            {/*<Tabs.Screen name="post" />*/}
             <Tabs.Screen name="create" />
+            <Tabs.Screen name="chat" />
             <Tabs.Screen name="profile" />
         </Tabs>
     );
