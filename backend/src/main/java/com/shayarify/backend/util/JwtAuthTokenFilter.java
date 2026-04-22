@@ -1,6 +1,6 @@
 package com.shayarify.backend.util;
 
-import com.shayarify.backend.service.CustomUserDetailsService;
+import com.shayarify.backend.model.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,10 +51,16 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 
                 UserDetails userDetails= userDetailsService.loadUserByUsername(username);
 
+                CustomUserDetails customUser = (CustomUserDetails) userDetails;
+
                 System.out.println("Authorities: " + userDetails.getAuthorities());
 
                 UsernamePasswordAuthenticationToken authenticationToken=
-                        new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+//                        new UsernamePasswordAuthenticationToken(customUser.getId().toString(),null,userDetails.getAuthorities());
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+userDetails.getAuthorities()                        );
 
                 logger.debug("Roles from JWT:{}",userDetails.getAuthorities());
 
