@@ -1,4 +1,4 @@
-package com.shayarify.backend.service;
+package com.shayarify.backend.service.post;
 
 import com.shayarify.backend.model.Shayari;
 import com.shayarify.backend.repository.ShayariRepository;
