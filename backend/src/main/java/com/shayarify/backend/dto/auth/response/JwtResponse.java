@@ -1,12 +1,15 @@
-package com.shayarify.backend.dto;
+package com.shayarify.backend.dto.auth.response;
 
 import com.shayarify.backend.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data//->get ,set,rac
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class JwtResponse {
+    private Long userId;
     private String jwtToken;
     private String username;
     private Role role;
