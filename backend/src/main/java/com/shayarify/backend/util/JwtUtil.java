@@ -42,11 +42,11 @@ public class JwtUtil {
     }
 
     //2)generate Token from username
-    public String genTokenFromUserName(CustomUserDetails userDetails){
-        String username= userDetails.getUsername();
+    public String genTokenFromUserName(CustomUserDetails customUserDetails){
+        String email= customUserDetails.getEmail();
         return Jwts.builder()
-                .subject(username)
-                .claim("role", userDetails.getRole().name())
+                .subject(email)
+                .claim("role", customUserDetails.getRole().name())
                 .issuedAt(new Date())
                 .expiration(new Date((new Date()).getTime()+jwtExpirationMs))
                 .signWith(key())
@@ -64,9 +64,10 @@ public class JwtUtil {
     //4)validate Jwt Token
     public boolean validateJwtToken(String authToken){
         try{
-            System.out.println("Validate");
+
             Jwts.parser().verifyWith((SecretKey) key()).build()
                     .parseSignedClaims(authToken);
+            System.out.println("Validated Token for Login!");
             return true;
         }catch (MalformedJwtException e){
             logger.error("Invalid JWT Token:{}",e.getMessage());
