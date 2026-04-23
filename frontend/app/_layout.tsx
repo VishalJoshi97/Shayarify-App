@@ -18,8 +18,6 @@ export default function RootLayout() {
 
     if (!ready) return null; // or loader
 
-    // return <Slot />;
-
   return (
       <AuthProvider>
         <Stack screenOptions={{ headerShown: false }} />
