@@ -1,6 +1,6 @@
-package com.shayarify.backend.service;
+package com.shayarify.backend.zextra.auth;
 
-import com.shayarify.backend.dto.RegisterRequest;
+import com.shayarify.backend.dto.auth.request.RegisterRequest;
 import com.shayarify.backend.model.User;
 import com.shayarify.backend.repository.UserRepository;
 import com.shayarify.backend.util.JwtUtil;
@@ -9,8 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 //@Service
-//depd Inj
-@RequiredArgsConstructor//A constructor for
+
+@RequiredArgsConstructor//depd Inj->A constructor for
 // all final fields and any fields marked with @NonNull
 public class AuthService {
 
