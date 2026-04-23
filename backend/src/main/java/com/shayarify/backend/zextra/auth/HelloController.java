@@ -1,9 +1,9 @@
-package com.shayarify.backend.controller;
+package com.shayarify.backend.zextra.auth;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+//@RestController
 public class HelloController {
 
     @GetMapping("/hello")
