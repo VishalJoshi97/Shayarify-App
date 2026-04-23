@@ -1,13 +1,11 @@
-import {Redirect, router, Tabs} from "expo-router";
+import {Redirect, Tabs} from "expo-router";
 import { useAuth } from "@/app/src/hooks/useAuth";
 import { ActivityIndicator, View } from "react-native";
-import {useEffect} from "react";
 
 export default function TabsLayout() {
     const { token, loading } = useAuth(); // 🔥 add loading
 
-
-    // ⏳ Wait for auth to load
+    //Wait for auth to load
     if (loading) {
         return (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -16,12 +14,12 @@ export default function TabsLayout() {
         );
     }
 
-    // 🔐 Not logged in
+    //Not logged in
     if (!token) {
         return <Redirect href="/(auth)/login" />;
     }
 
-    // ✅ Logged in
+    //Logged in
     return (
         <Tabs>
             <Tabs.Screen name="feed" />
