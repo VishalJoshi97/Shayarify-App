@@ -1,28 +1,24 @@
 import React, { createContext, useEffect, useState, ReactNode } from "react";
 import {getToken, saveToken, removeToken, getUser, saveUser,removeUser} from "../utils/storage";
 import {User} from "@/app/src/types/user";
+import {AuthContextType} from "@/app/src/types/auth"
 
-type AuthContextType = {
-    token: string | null;
-    user: User | null; // 🔥 ADD THIS
-    loading: boolean;
-    login: (token: string, user: User) => Promise<void>; // 🔥 update
-    logout: () => Promise<void>;
-};
-
+//1)Define Context
 export const AuthContext = createContext<AuthContextType>({
     token: null,
     user: null,
-    loading: true,
+    loading: true,//initially loading should be true
     login: async () => {},
     logout: async () => {},
 });
 
+//2)Create Provider
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [token, setToken] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true); // 🔥 NEW
+    const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
 
+    //2.1)always run it to get token
     useEffect(() => {
         const loadAuth = async () => {
             try {
@@ -30,17 +26,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 const storedUser = await getUser();
 
                 if (storedToken) setToken(storedToken);
-                if (storedUser) setUser(storedUser); // 🔥 IMPORTANT
+                if (storedUser) setUser(storedUser);
+                console.log("LOADED AUTH DATA TOKEN AND USER SUCCESSFULLY!");
             } catch (e) {
-                console.log("AsyncStorage error:", e);
+                console.debug("AsyncStorage error In Auth Context:", e);
             } finally {
-                setLoading(false);
+                setLoading(false);//after getting token loading should be false
             }
         };
 
         loadAuth();
     }, []);
 
+    //2.2)login
     const login = async (token: string,user: User) => {
         await saveToken(token);
         await saveUser(user);
@@ -48,9 +46,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(user); //store user
     };
 
+    //2.3)logout
     const logout = async () => {
         await removeToken();
-        await removeUser(); // 🔥 REMOVE USER
+        await removeUser();//REMOVE USER
         setToken(null);
         setUser(null);
     };
