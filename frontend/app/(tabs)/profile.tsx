@@ -1,14 +1,14 @@
 import {Text, View, StyleSheet, TouchableOpacity} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/app/src/hooks/useAuth";
-import { getProfile, updateProfile } from "../src/api/profileApi";
+import { useAuth } from "../../src/hooks/useAuth";
+import { getProfile, updateProfile } from "../../src/api/profileApi";
 import {FontAwesome, Ionicons} from '@expo/vector-icons';
 
-import ProfileHeader from "../../app/components/ProfileHeader";
-import BioSection from "../../app/components/BioSection";
-import QuoteRotator from "../../app/components/ QuoteRotator";
-import MusicPlayer from "../../app/components/MusicPlayer";
+import ProfileHeader from "../../src/components/ProfileHeader";
+import BioSection from "../../src/components/BioSection";
+import QuoteRotator from "../../src/components/ QuoteRotator";
+import MusicPlayer from "../../src/components/MusicPlayer";
 
 export default function Profile() {
     const { user ,logout} = useAuth();
@@ -41,11 +41,13 @@ export default function Profile() {
                 username={user?.username || "User"}
                 profile={profile}
                 saveProfile={saveProfile}
+                isEditable={true}
             />
 
             <BioSection
                 profile={profile}
                 saveProfile={saveProfile}
+                isEditable={true}
             />
 
             <QuoteRotator />
