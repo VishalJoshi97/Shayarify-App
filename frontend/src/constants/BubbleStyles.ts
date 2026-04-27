@@ -17,7 +17,7 @@ export const BubbleStyles = StyleSheet.create({
 
     bubble: {
         maxWidth: "75%",
-        padding: 10,
+        padding: 11,
         borderRadius: 12,
     },
 
