@@ -1,58 +1,112 @@
-import {ScrollView, Text, useWindowDimensions, View} from "react-native";
-import { useEffect, useState } from "react";
-import Client from "../src/api/client";
-import { Shayari } from "../src/types/types";
-import RenderHTML from "react-native-render-html";
+import {FlatList, Text, useWindowDimensions} from "react-native";
+import {useCallback, useState} from "react";
+import Client from "../../src/api/client";
+import { Shayari } from "../../src/types/shayari";
+import { useFocusEffect } from "@react-navigation/native";
+import { router } from "expo-router";
+import {useAuth} from "../../src/hooks/useAuth";
+import PostCard from "../../src/components/PostCard";
 
 export default function Feed() {
-    const [data, setData] = useState<Shayari[]>([]);
-    const { width } = useWindowDimensions();
+    const { user } = useAuth();
+    // const myId = user?.id;
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    const [data, setData] = useState<Shayari[]>([]);//Shayari Types
+    // const { width } = useWindowDimensions();
 
-    const fetchData = async () => {
-        const res = await Client.get<Shayari[]>("/shayari");
-        setData(res.data);
-    };
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchData(0); // 🔥 runs when screen is focused
+        }, [])
+    );
 
 
-    const stripHtml = (html: string) => {
-        return html
-            .replace(/<br\s*\/?>/gi, "\n")
-            .replace(/<\/p>/gi, "\n")
-            .replace(/<[^>]*>?/gm, "");
+    // const openChat = (userId: number) => {
+    //     router.push({
+    //         pathname: "/chat/[userId]",
+    //         params: {
+    //             userId: userId.toString(), // 🔥 REQUIRED
+    //             receiverId: userId.toString(),
+    //         },
+    //     });
+    // };
+
+    const fetchData = async (pageNumber: number) => {
+        if (loading || !hasMore) return;
+
+        setLoading(true);
+
+        try {
+            const res = await Client.get(
+                `/post?page=${pageNumber}&size=5`//PostResponse
+            );
+
+            const newData = res.data.content;
+
+            setData((prev) =>
+                pageNumber === 0
+                    ? newData
+                    : [...prev, ...newData]
+            );
+
+            setHasMore(!res.data.last);
+            setPage(pageNumber + 1);
+
+        } catch (err) {
+            console.log("FETCH ERROR: ",err);
+        }
+
+        setLoading(false);
     };
 
     return (
-        <ScrollView>
-            {data.map((s) =>{
-                console.log(s.content);
-               return (
-                <View
-                    key={s.id}
-                    style={{
-                        backgroundColor: "#fff",
-                        padding: 12,
-                        borderRadius: 10,
-                        marginBottom: 12,
-                    }}
-                >
-                    <RenderHTML
-                        contentWidth={width}
-                        source={{
-                            html: s.content.replace(/<div>/g, "<p>").replace(/<\/div>/g, "</p>")
-                        }}
-                        tagsStyles={{
-                            p: { fontSize: 16 },
-                            b: { fontWeight: "bold" },
-                            i: { fontStyle: "italic" },
-                        }}
-                    />
-                </View>
-            )
-            })}
-        </ScrollView>
+        <FlatList
+            data={data}//chose the object
+
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={{ padding: 12 }}
+            // renderItem={({ item }) => {
+            //
+            //     const cleanHtml = item.content
+            //         .replace(/<div>/g, "<p>")
+            //         .replace(/<\/div>/g, "</p>")
+            //         .replace(/&nbsp;/g, " "); // 🔥 FIX
+            //
+            //     return(
+            //         <View
+            //             style={{
+            //                 backgroundColor: "#fff",
+            //                 padding: 12,
+            //                 borderRadius: 10,
+            //                 marginBottom: 12,
+            //             }}
+            //         >
+            //
+            //             <RenderHTML
+            //                 contentWidth={width}
+            //                 source={{ html: cleanHtml }}
+            //             />
+            //
+            //             <LikeButton postId={item.id} />
+            //             <Button title="Chat" onPress={() => openChat(item.userId)} />
+            //
+            //         </View>
+            //     )
+            // }}
+            renderItem={({ item }) => <PostCard item={item} />}
+
+            onEndReached={()=>fetchData(page)}              // 🔥 pagination trigger
+            onEndReachedThreshold={0.3}
+
+
+            ListFooterComponent={
+                loading ? <Text>Loading...</Text> : null
+            }
+        />
     );
 }
