@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
-import { Text, StyleSheet } from "react-native";
-import { quotes } from "../data/quotes";
+import { Text,View, StyleSheet } from "react-native";
+import { quotes } from "@/data/quotes";
+import {useTheme} from "@/theme/ThemeContext";
+import {themes} from "@/theme/themes";
 
 export default function QuoteRotator() {
+    const { theme } = useTheme();
+    // @ts-ignore
+    const currentTheme = themes[theme];
+
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
@@ -13,7 +19,9 @@ export default function QuoteRotator() {
         return () => clearInterval(interval);
     }, []);
 
-    return <Text style={styles.quote}>{quotes[index]}</Text>;
+    return (
+        <Text style={[styles.quote,{color:currentTheme.text}]}>{quotes[index]}</Text>
+    );
 }
 
 const styles = StyleSheet.create({
