@@ -1,29 +1,32 @@
-import {View, TextInput, Button, StyleSheet, Text, TouchableOpacity, Alert} from "react-native";
+import {View, TextInput, StyleSheet, Text, TouchableOpacity, Alert} from "react-native";
 import {useEffect, useState} from "react";
 import {Link, useRouter} from "expo-router";
-import { loginApi } from "../src/api/authApi";
-import { useAuth } from "../src/hooks/useAuth";
+import { loginApi } from "../../src/api/authApi";
+import { useAuth } from "../../src/hooks/useAuth";
 
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
 import * as Linking from "expo-linking";
-import {User} from "@/app/src/types/user";
-WebBrowser.maybeCompleteAuthSession(); // important
+import {User} from "../../src/types/user";
+
+// WebBrowser.maybeCompleteAuthSession(); // important
 
 export default function Login() {
+    //states
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const router = useRouter();
-    const [user, setUser] = useState<User[]>([]);
 
-    const { login, token } = useAuth();
+    //hooks
+    const router = useRouter();
+    const { login, token } = useAuth();//from context
 
     useEffect(() => {
         if (token) {
-            console.log("✅ Redirecting to feed");
+            console.log("✅ Redirecting to feed (JUST LOGGED IN)");
             router.replace("/feed");
         }
     }, [token]);
+
 
     // Normal Login
     const handleLogin = async () => {
@@ -35,26 +38,27 @@ export default function Login() {
             const token = res?.data?.jwtToken;
             const user = {
                 id: res.data.userId,
-                email: res.data.username,
+                username: res.data.username,
             };
 
-            console.log("TOKEN ",token)
-            console.log("USER ",user)
+            console.log("LOGIN TOKEN ",token)
+            console.log("LOGIN USER ",user)
 
             if (!token || !user) {
-                Alert.alert("Error", "Invalid credentials");
+                Alert.alert("Login Failed", "Invalid credentials");
                 return;
             }
 
-            await login(token,user);
+            await login(token,user as User);
 
             alert("Login Successful!");
 
         } catch (e: any) {
-            console.log(e);
+            console.log("❌ LOGIN ERROR:", e?.response?.data || e.message);
             Alert.alert("Login Failed", "Check your credentials");
         }
     };
+
 
 
     // 🔥 Google OAuth (Expo Go Compatible)
