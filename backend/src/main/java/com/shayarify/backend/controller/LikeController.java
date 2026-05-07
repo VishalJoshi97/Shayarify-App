@@ -1,18 +1,16 @@
 package com.shayarify.backend.controller;
 
 import com.shayarify.backend.model.CustomUserDetails;
-import com.shayarify.backend.service.CustomUserDetailsService;
-import com.shayarify.backend.service.LikeService;
+import com.shayarify.backend.service.like.LikeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/shayari")
+@RequestMapping("/api/post")
 public class LikeController {
 
     @Autowired

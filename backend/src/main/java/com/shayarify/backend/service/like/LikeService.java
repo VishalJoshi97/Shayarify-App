@@ -1,4 +1,4 @@
-package com.shayarify.backend.service;
+package com.shayarify.backend.service.like;
 
 import com.shayarify.backend.model.Like;
 import com.shayarify.backend.model.Post;
