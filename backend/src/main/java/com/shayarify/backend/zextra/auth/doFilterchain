@@ -1,0 +1,43 @@
+//    @Override
+//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+//            throws ServletException, IOException {
+//
+//        logger.debug("JwtAuthTokenFilter called for URI:{}",request.getRequestURI());
+//
+//        try {
+//            String jwt=parseJwt(request);
+//            if (jwt!=null && jwtUtils.validateJwtToken(jwt)){
+//                System.out.println("Valid JWT");
+//
+//                String username=jwtUtils.getUserNameFromJwtToken(jwt);
+//
+//                System.out.println("TOKEN USER: " + username);
+//
+//                UserDetails userDetails= userDetailsService.loadUserByUsername(username);
+//
+//                CustomUserDetails customUser = (CustomUserDetails) userDetails;
+//
+//                System.out.println("Authorities: " + userDetails.getAuthorities());
+//
+//                UsernamePasswordAuthenticationToken authenticationToken=
+////                        new UsernamePasswordAuthenticationToken(customUser.getId().toString(),null,userDetails.getAuthorities());
+//                        new UsernamePasswordAuthenticationToken(
+//                                customUser,
+//                                null,
+//userDetails.getAuthorities()                        );
+//
+//                logger.debug("Roles from JWT:{}",userDetails.getAuthorities());
+//
+//                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//
+//                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+//
+//                System.out.println("AUTH SET: " + SecurityContextHolder.getContext().getAuthentication());
+//            }
+//        }catch (Exception e){
+//            logger.debug("Cannot set user Authentication:{}",e.getMessage());
+//        }
+//
+//        //continue filter chain as usual
+//        filterChain.doFilter(request,response);
+//    }
