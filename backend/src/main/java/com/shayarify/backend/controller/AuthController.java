@@ -1,13 +1,15 @@
 package com.shayarify.backend.controller;
 
-import com.shayarify.backend.dto.JwtResponse;
-import com.shayarify.backend.dto.LoginRequest;
-import com.shayarify.backend.dto.RegisterRequest;
+import com.shayarify.backend.dto.auth.response.JwtResponse;
+import com.shayarify.backend.dto.auth.request.LoginRequest;
+import com.shayarify.backend.dto.auth.request.RegisterRequest;
 import com.shayarify.backend.enums.Role;
 import com.shayarify.backend.model.CustomUserDetails;
 import com.shayarify.backend.model.User;
 import com.shayarify.backend.repository.UserRepository;
+import com.shayarify.backend.service.auth.AuthService;
 import com.shayarify.backend.util.JwtUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,81 +23,54 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/auth")
-
+@RequiredArgsConstructor
 public class AuthController {
-    @Autowired
-    private    AuthenticationManager authenticationManager;
-    @Autowired
-    private   JwtUtil jwtUtils;
-    @Autowired
-    private   PasswordEncoder passwordEncoder;
-    @Autowired
-    private   UserRepository userRepository;
+    private final AuthService authService;
+
+    //REGISTER
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest req){
+
+    boolean isUsername=authService.existsByUsername(req);
+    boolean isEmail=authService.existsByEmail(req);
+
+   if(isUsername) return ResponseEntity.badRequest().body("User Already Exists!");
+
+   if ((isEmail)) return ResponseEntity.badRequest().body("Email Already in Use!");
+
+   authService.register(req);
+
+   return ResponseEntity.ok("User registered successfully!");
+    }
+
 
     //LOGIN
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
-                        loginRequest.getPassword()
-                )
-        );
+      JwtResponse jwtResponse=authService.login(loginRequest);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-
-        String jwt = jwtUtils.genTokenFromUserName(userDetails);
-
-
-        return ResponseEntity.ok(
-                new JwtResponse(
-                        jwt,
-                        userDetails.getUsername(),
-                        userDetails.getRole()
-                )
-        );
+        return ResponseEntity.ok(jwtResponse);
     }
 
-    //REGISTER
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
-
-        if (userRepository.existsByUsername(request.getUsername())) {
-            return ResponseEntity.badRequest().body("Error: Username already exists!");
-        }
-
-        if (userRepository.existsByEmail(request.getEmail())) {
-            return ResponseEntity.badRequest().body("Error: Email already in use!");
-        }
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setEmail(request.getEmail());
-        user.setRole(Role.ROLE_USER); // default role
-
-        userRepository.save(user);
-
-        return ResponseEntity.ok("User registered successfully!");
-    }
-
+   
     @PostMapping("/admin/create")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> createAdmin(@RequestBody RegisterRequest request) {
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setEmail(request.getEmail());
-        user.setRole(Role.ROLE_ADMIN);
+    public ResponseEntity<?> createAdmin(@RequestBody RegisterRequest req) {
 
-        userRepository.save(user);
+        boolean isUsername=authService.existsByUsername(req);
+        boolean isEmail=authService.existsByEmail(req);
 
-        return ResponseEntity.ok("Admin created");
+        if(isUsername) return ResponseEntity.badRequest().body("User Already Exists!");
+
+        if ((isEmail)) return ResponseEntity.badRequest().body("Email Already in Use!");
+        authService.createAdmin(req);
+
+        return ResponseEntity.ok("Admin created successfully!");
     }
 
 
