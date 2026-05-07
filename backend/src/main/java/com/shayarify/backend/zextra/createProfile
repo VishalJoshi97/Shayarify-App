@@ -1,0 +1,40 @@
+     //1)create wrt userId with req and return res
+     public CreateProfileResponse createProfile(ProfileRequest req, Long userId){
+
+         User user=userRepository.findById(userId).orElseThrow(
+                 ()-> new UsernameNotFoundException("User Id not Found!"));
+
+         Profile profile=new Profile();
+
+         profile.setUser(user);
+         profile.setBio(req.getBio());
+         profile.setImageUrl(req.getImageUrl());
+
+         Profile savedProfile= profileRepository.save(profile);
+
+         return new CreateProfileResponse(
+                 savedProfile.getId(),
+                 savedProfile.getUser().getId(),
+                 savedProfile.getBio(),
+                 savedProfile.getImageUrl(),
+                 LocalDateTime.now()
+         );
+     }
+
+     //helper method
+         public boolean existByUserId(Long userId){
+             return profileRepository.findByUserId(userId).isPresent();
+         }
+
+ @PostMapping("/create")
+   public ResponseEntity<?> createProfile(@RequestBody ProfileRequest req, Authentication auth){
+
+       CustomUserDetails customUser = (CustomUserDetails) auth.getPrincipal();
+
+       boolean isUserId= profileService.existByUserId(customUser.getId());
+       if(isUserId) return ResponseEntity.status(HttpStatus.CONFLICT).body("User with  profile already exists");
+
+       CreateProfileResponse res=profileService.createProfile(req, customUser.getId());
+
+       return ResponseEntity.status(HttpStatus.CREATED).body(res);
+   }
