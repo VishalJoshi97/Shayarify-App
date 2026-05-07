@@ -20,6 +20,9 @@ public class Post {
 
     private String title;
 
+    private String language;
+
+    @NonNull
     @Column(columnDefinition = "TEXT") // 🔥 IMPORTANT
     private String content;
 
