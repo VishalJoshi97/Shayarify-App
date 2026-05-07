@@ -1,38 +1,32 @@
 package com.shayarify.backend.model;
 
 import com.shayarify.backend.enums.Role;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
 
+@AllArgsConstructor
+//@NoArgsConstructor -cant do bcz all fields are mandatory
+@Getter @Setter
 public class CustomUserDetails implements UserDetails {
-    @Getter
+
     private final Long id;
     private final String username;
     private final String password;
-    @Getter
     private final Role role;
-
     private Collection<? extends GrantedAuthority> authorities;
+    private final String email;
 
-    // Constructor
-    public CustomUserDetails(Long id, String username, String password,
-                             Role role,
-                             Collection<? extends GrantedAuthority> authorities) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.role = role;
-        this.authorities = authorities;
-    }
-
-    // Static builder method (VERY IMPORTANT)
+    // Static builder method
+    //execute to create user whenever the class loads
     public static CustomUserDetails build(User user) {
 
         Role role = user.getRole();
@@ -40,34 +34,20 @@ public class CustomUserDetails implements UserDetails {
         List<GrantedAuthority> authorities = List.of(
                 new SimpleGrantedAuthority(role.name())
         );
+
         return new CustomUserDetails(
                 user.getId(),
-                user.getEmail(),
+                user.getUsername(),
                 user.getPassword(),
                 role,
-                authorities
+                authorities,
+                user.getEmail()
         );
     }
 
-    public String getRoleName() {
-        return role.name();
-    }
+
     // Required methods
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
+    // ->username and password with getter
 
     @Override
     public boolean isAccountNonExpired() {

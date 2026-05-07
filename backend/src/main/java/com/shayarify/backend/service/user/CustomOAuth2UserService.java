@@ -1,4 +1,4 @@
-package com.shayarify.backend.service;
+package com.shayarify.backend.service.user;
 
 import com.shayarify.backend.enums.Role;
 import com.shayarify.backend.model.User;
