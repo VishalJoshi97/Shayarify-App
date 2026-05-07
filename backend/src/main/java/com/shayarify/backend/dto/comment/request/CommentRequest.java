@@ -1,4 +1,4 @@
-package com.shayarify.backend.dto;
+package com.shayarify.backend.dto.comment.request;
 
 import lombok.Data;
 

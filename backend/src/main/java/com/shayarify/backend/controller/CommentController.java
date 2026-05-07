@@ -1,7 +1,7 @@
 package com.shayarify.backend.controller;
 
-import com.shayarify.backend.dto.CommentRequest;
-import com.shayarify.backend.dto.CommentResponse;
+import com.shayarify.backend.dto.comment.request.CommentRequest;
+import com.shayarify.backend.dto.comment.response.CommentResponse;
 import com.shayarify.backend.model.Comment;
 import com.shayarify.backend.model.CustomUserDetails;
 import com.shayarify.backend.repository.CommentRepository;
