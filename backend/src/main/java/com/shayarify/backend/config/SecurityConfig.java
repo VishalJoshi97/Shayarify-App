@@ -1,7 +1,7 @@
 package com.shayarify.backend.config;
 
 import com.shayarify.backend.model.CustomUserDetails;
-import com.shayarify.backend.service.user.CustomOAuth2UserService;
+//import com.shayarify.backend.service.user.CustomOAuth2UserService;
 import com.shayarify.backend.service.user.CustomUserDetailsService;
 import com.shayarify.backend.util.JwtAuthEntryPoint;
 import com.shayarify.backend.util.JwtAuthTokenFilter;
@@ -42,9 +42,9 @@ public class SecurityConfig {
 
     @Autowired
     private JwtAuthTokenFilter jwtAuthTokenFilter;
-
-    @Autowired
-    private CustomOAuth2UserService customOAuth2UserService;
+//
+//    @Autowired
+//    private CustomOAuth2UserService customOAuth2UserService;
 
 
     @Bean
