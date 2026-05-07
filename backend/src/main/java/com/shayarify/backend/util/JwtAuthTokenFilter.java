@@ -34,50 +34,36 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
 
-        logger.debug("JwtAuthTokenFilter called for URI:{}",request.getRequestURI());
+@Override
+protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+        throws ServletException, IOException {
 
-        try {
-            String jwt=parseJwt(request);
-            if (jwt!=null && jwtUtils.validateJwtToken(jwt)){
-                System.out.println("Valid JWT");
+    try {
+        String jwt = parseJwt(request);
+        if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+            String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                String username=jwtUtils.getUserNameFromJwtToken(jwt);
+            // Passing the whole userDetails object as the Principal
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-                System.out.println("TOKEN USER: " + username);
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                UserDetails userDetails= userDetailsService.loadUserByUsername(username);
+            // Set the context
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                CustomUserDetails customUser = (CustomUserDetails) userDetails;
-
-                System.out.println("Authorities: " + userDetails.getAuthorities());
-
-                UsernamePasswordAuthenticationToken authenticationToken=
-//                        new UsernamePasswordAuthenticationToken(customUser.getId().toString(),null,userDetails.getAuthorities());
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-userDetails.getAuthorities()                        );
-
-                logger.debug("Roles from JWT:{}",userDetails.getAuthorities());
-
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-                System.out.println("AUTH SET: " + SecurityContextHolder.getContext().getAuthentication());
-            }
-        }catch (Exception e){
-            logger.debug("Cannot set user Authentication:{}",e.getMessage());
+            System.out.println("DEBUG: SecurityContext successfully set for: " + username);
         }
-
-        //continue filter chain as usual
-        filterChain.doFilter(request,response);
+    } catch (Exception e) {
+        // Change logger to Error so you can actually see what failed (e.g. expired token)
+        logger.error("Cannot set user authentication: {}", e.getMessage());
     }
 
+    // Crucial: continue the chain
+    filterChain.doFilter(request, response);
+}
     //2) parse request from Authorization : Bearer token
     private String parseJwt(HttpServletRequest request) {
         String jwt=jwtUtils.getJwtFromHeader(request);
@@ -90,7 +76,7 @@ userDetails.getAuthorities()                        );
 
         String path = request.getRequestURI();
 
-        // ❗ Only run JWT for API endpoints
+        //Only run JWT for API endpoints
         return !path.startsWith("/api");
     }
 }
