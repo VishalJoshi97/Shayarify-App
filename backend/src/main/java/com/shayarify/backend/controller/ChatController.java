@@ -1,7 +1,7 @@
 package com.shayarify.backend.controller;
 
 import com.shayarify.backend.model.CustomUserDetails;
-import com.shayarify.backend.service.MessageService;
+import com.shayarify.backend.service.message.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
