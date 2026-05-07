@@ -1,0 +1,20 @@
+//        // 🔥 map to DTO later
+//        List<Map<String, Object>> content = posts.getContent().stream().map(post -> {
+//            Map<String, Object> map = new HashMap<>();
+//            map.put("id", post.getId());
+//            map.put("userId", post.getUser().getId());
+//            map.put("username", post.getUser().getUsername());
+//            map.put("title", post.getTitle());
+//            map.put("language", post.getTitle());
+//            map.put("content", post.getTitle());
+//            map.put("createdAt", post.getCreatedAt());
+//            return map;
+//        }).toList();
+//
+//        return ResponseEntity.ok(
+//                Map.of(
+//                        "content", content,
+//                        "last", posts.isLast()
+//                )
+//        );
+//    }
