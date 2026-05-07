@@ -19,10 +19,10 @@ public class JwtUtil {
 
     private static final Logger logger= LoggerFactory.getLogger(JwtUtil.class);
 
-    @Value("${spring.app.jwtSecret}")
+    @Value("${jwt.secret}")
     private String jwtSecret;
 
-    @Value("${spring.app.jwtExpiration}")
+    @Value("${jwt.expiration}")
     private int jwtExpirationMs;
 
    //1)Get token from header-> Authorization: Bearer 'token'
