@@ -1,4 +1,4 @@
-package com.shayarify.backend.service;
+package com.shayarify.backend.service.message;
 
 import com.shayarify.backend.model.Message;
 import com.shayarify.backend.repository.MessageRepository;
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MessageService {
@@ -26,9 +27,10 @@ public class MessageService {
     }
 
     public List<Message> getConversation(Long user1, Long user2) {
-        return messageRepository
-                .findBySenderIdAndReceiverIdOrReceiverIdAndSenderIdOrderByTimestampAsc(
-                        user1, user2, user1, user2
-                );
+        return messageRepository.getConversation(user1, user2);
+    }
+
+    public List<Map<String, Object>> getConversations(Long userId) {
+        return messageRepository.getConversations(userId);
     }
 }
