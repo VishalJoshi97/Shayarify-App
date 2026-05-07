@@ -18,9 +18,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
-import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
-import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
+//import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
+//import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
+//import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -52,11 +52,11 @@ public class SecurityConfig {
             throws Exception {
         return authConfig.getAuthenticationManager();
     }
-
-    @Bean
-    public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository() {
-        return new HttpSessionOAuth2AuthorizationRequestRepository();
-    }
+//
+//    @Bean
+//    public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository() {
+//        return new HttpSessionOAuth2AuthorizationRequestRepository();
+//    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http)
@@ -83,51 +83,51 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
         );
 
-        http.oauth2Login(oauth2 -> oauth2
-
-                //IMPORTANT: preserve redirect_uri across OAuth flow
-                .authorizationEndpoint(auth -> auth
-                        .authorizationRequestRepository(authorizationRequestRepository())
-                )
-
-                .userInfoEndpoint(userInfo -> userInfo
-                        .userService(customOAuth2UserService)
-                )
-
-                .successHandler((request, response, authentication) -> {
-
-                    var oauthUser = (org.springframework.security.oauth2.core.user.OAuth2User)
-                            authentication.getPrincipal();
-
-                    String email = oauthUser.getAttribute("email");
-
-                    CustomUserDetails customUserDetails =
-                            (CustomUserDetails) userDetailsService.loadUserByUsername(email);
-
-                    String jwt = jwtUtil.genTokenFromUserName(customUserDetails);
-
-                    // get dynamic redirect URI from frontend
-                    String redirectUri = request.getParameter("redirect_uri");
-
-                    if (redirectUri == null || redirectUri.isEmpty()) {
-                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing redirect_uri");
-                        return;
-                    }
-
-                    //security check (VERY IMPORTANT)
-                    if (!redirectUri.startsWith("https://auth.expo.io")) {
-                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid redirect URI");
-                        return;
-                    }
-
-                    String finalUrl = redirectUri
-                            + "?jwtToken=" + jwt;
-//                            + "&userId=" + customUserDetails.getId()
-//                            + "&email=" + email;
-
-                    response.sendRedirect(finalUrl);
-                })
-        );
+//        http.oauth2Login(oauth2 -> oauth2
+//
+//                //IMPORTANT: preserve redirect_uri across OAuth flow
+//                .authorizationEndpoint(auth -> auth
+//                        .authorizationRequestRepository(authorizationRequestRepository())
+//                )
+//
+//                .userInfoEndpoint(userInfo -> userInfo
+//                        .userService(customOAuth2UserService)
+//                )
+//
+//                .successHandler((request, response, authentication) -> {
+//
+//                    var oauthUser = (org.springframework.security.oauth2.core.user.OAuth2User)
+//                            authentication.getPrincipal();
+//
+//                    String email = oauthUser.getAttribute("email");
+//
+//                    CustomUserDetails customUserDetails =
+//                            (CustomUserDetails) userDetailsService.loadUserByUsername(email);
+//
+//                    String jwt = jwtUtil.genTokenFromUserName(customUserDetails);
+//
+//                    // get dynamic redirect URI from frontend
+//                    String redirectUri = request.getParameter("redirect_uri");
+//
+//                    if (redirectUri == null || redirectUri.isEmpty()) {
+//                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing redirect_uri");
+//                        return;
+//                    }
+//
+//                    //security check (VERY IMPORTANT)
+//                    if (!redirectUri.startsWith("https://auth.expo.io")) {
+//                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid redirect URI");
+//                        return;
+//                    }
+//
+//                    String finalUrl = redirectUri
+//                            + "?jwtToken=" + jwt;
+////                            + "&userId=" + customUserDetails.getId()
+////                            + "&email=" + email;
+//
+//                    response.sendRedirect(finalUrl);
+//                })
+//        );
         //http://localhost:8080/oauth2/authorization/google
         //http://localhost:8080/oauth2/authorization/github
 
