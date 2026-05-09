@@ -8,7 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+//only authenticated users can participate in room activity
 @RestController
 @RequestMapping("/api/rooms")
 @RequiredArgsConstructor
