@@ -33,15 +33,6 @@ public class Room {
 
     private LocalDateTime createdAt;
 
-    @Builder.Default
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(
-            name = "room_members",
-            joinColumns = @JoinColumn(name = "room_id")
-    )
-    @Column(name = "user_id")
-    private Set<Long> members = new HashSet<>();
-
     @PrePersist
     public void prePersist() {
 

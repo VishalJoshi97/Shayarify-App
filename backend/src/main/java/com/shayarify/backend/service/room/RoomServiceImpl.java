@@ -2,12 +2,17 @@ package com.shayarify.backend.service.room;
 
 import com.shayarify.backend.dto.room.*;
 import com.shayarify.backend.model.Room;
+import com.shayarify.backend.model.RoomMember;
 import com.shayarify.backend.model.RoomMessage;
+import com.shayarify.backend.model.User;
+import com.shayarify.backend.repository.RoomMemberRepository;
 import com.shayarify.backend.repository.RoomMessageRepository;
 import com.shayarify.backend.repository.RoomRepository;
+import com.shayarify.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,32 +21,63 @@ import java.util.stream.Collectors;
 public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
+    private final RoomMemberRepository roomMemberRepository;
     private final RoomMessageRepository roomMessageRepository;
+    private final UserRepository userRepository;
+
 
     @Override
-    public RoomResponse createRoom(CreateRoomRequest request, Long userId) {
+    public RoomResponse createRoom(
+            CreateRoomRequest request,
+            Long userId
+    ) {
+
         Room room = Room.builder()
                 .roomName(request.getRoomName())
                 .createdBy(userId)
                 .build();
 
-        room.getMembers().add(userId);
-
         Room savedRoom = roomRepository.save(room);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow();
+
+        RoomMember roomMember = RoomMember.builder()
+                .room(savedRoom)
+                .user(user)
+                .joinedAt(LocalDateTime.now())
+                .build();
+
+        roomMemberRepository.save(roomMember);
 
         return mapToResponse(savedRoom);
     }
 
     @Override
-    public RoomResponse joinRoom(JoinRoomRequest request, Long userId) {
-        Room room = roomRepository.findByRoomCode(request.getRoomCode())
-                .orElseThrow(() -> new RuntimeException("Room not found"));
+    public RoomResponse joinRoom(
+            JoinRoomRequest request,
+            Long userId
+    ) {
 
-        room.getMembers().add(userId);
+        Room room = roomRepository
+                .findByRoomCode(request.getRoomCode())
+                .orElseThrow(() ->
+                        new RuntimeException("Room not found"));
 
-        Room updatedRoom = roomRepository.save(room);
+        User user = userRepository.findById(userId)
+                .orElseThrow();
 
-        return mapToResponse(updatedRoom);    }
+        RoomMember roomMember = RoomMember.builder()
+                .room(room)
+                .user(user)
+                .joinedAt(LocalDateTime.now())
+                .build();
+
+        roomMemberRepository.save(roomMember);
+
+        return mapToResponse(room);
+    }
+
 
     @Override
     public RoomResponse getRoom(String roomCode) {
@@ -61,12 +97,23 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void leaveRoom(String roomCode, Long userId) {
+
         Room room = roomRepository.findByRoomCode(roomCode)
-                .orElseThrow(() -> new RuntimeException("Room not found"));
+                .orElseThrow(() ->
+                        new RuntimeException("Room not found"));
 
-        room.getMembers().remove(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow();
 
-        roomRepository.save(room);
+        RoomMember roomMember =
+                roomMemberRepository
+                        .findByRoomAndUser(room, user)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "User is not in room"
+                                ));
+
+        roomMemberRepository.delete(roomMember);
     }
 
     //message
@@ -78,11 +125,20 @@ public class RoomServiceImpl implements RoomService {
             String username
     ) {
 
-        Room room = roomRepository.findByRoomCode(roomCode)
+        Room room = roomRepository
+                .findByRoomCode(roomCode)
                 .orElseThrow(() ->
                         new RuntimeException("Room not found"));
 
-        if (!room.getMembers().contains(userId)) {
+        User user = userRepository.findById(userId)
+                .orElseThrow();
+
+        boolean isMember =
+                roomMemberRepository
+                        .existsByRoomAndUser(room, user);
+
+        if (!isMember) {
+
             throw new RuntimeException(
                     "You are not a member of this room"
             );
@@ -100,6 +156,8 @@ public class RoomServiceImpl implements RoomService {
 
         return mapMessage(saved);
     }
+
+
 
     @Override
     public List<MessageResponse> getMessages(
@@ -142,7 +200,6 @@ public class RoomServiceImpl implements RoomService {
                 .roomCode(room.getRoomCode())
                 .createdBy(room.getCreatedBy())
                 .createdAt(room.getCreatedAt())
-                .members(room.getMembers())
                 .build();
     }
 
