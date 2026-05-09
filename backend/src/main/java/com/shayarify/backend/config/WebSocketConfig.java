@@ -23,8 +23,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
     
         @Override
         public void configureMessageBroker(MessageBrokerRegistry registry) {
-            registry.enableSimpleBroker("/queue", "/topic")
-                    .setHeartbeatValue(new long[]{10000, 10000});
+            registry.enableSimpleBroker("/queue", "/topic");
             registry.setApplicationDestinationPrefixes("/app");
             registry.setUserDestinationPrefix("/user");
         }
