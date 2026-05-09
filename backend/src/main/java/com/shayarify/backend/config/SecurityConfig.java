@@ -74,6 +74,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/post/**").authenticated()
                         .requestMatchers("/api/profile/**").authenticated()
+                        .requestMatchers("/api/rooms/**").authenticated()
                         .requestMatchers("/api/chat/**").hasRole("USER")
                         .requestMatchers("/chat/**").hasRole("USER")
                         .requestMatchers("/ws/**").permitAll()
