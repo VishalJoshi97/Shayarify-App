@@ -10,6 +10,10 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
     @EnableWebSocketMessageBroker
     public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+//        .setAllowedOriginPatterns(
+//    "http://localhost:8081",
+//            "https://shayarify.in"
+//        )
         @Override
         public void registerStompEndpoints(StompEndpointRegistry registry) {
             registry.addEndpoint("/ws")
@@ -19,7 +23,8 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
     
         @Override
         public void configureMessageBroker(MessageBrokerRegistry registry) {
-            registry.enableSimpleBroker("/queue","/topic");
+            registry.enableSimpleBroker("/queue", "/topic")
+                    .setHeartbeatValue(new long[]{10000, 10000});
             registry.setApplicationDestinationPrefixes("/app");
             registry.setUserDestinationPrefix("/user");
         }
