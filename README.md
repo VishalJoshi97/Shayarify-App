@@ -57,8 +57,7 @@ Shayarify/
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/your-username/Shayarify.git
-cd Shayarify/backend
+git clone https://github.com/VishalJoshi97/Shayarify-App.git
 ```
 
 ### 2. Configure MySQL
