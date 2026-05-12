@@ -1,7 +1,6 @@
 package com.shayarify.backend.config;
 
 import com.shayarify.backend.model.CustomUserDetails;
-//import com.shayarify.backend.service.user.CustomOAuth2UserService;
 import com.shayarify.backend.service.user.CustomUserDetailsService;
 import com.shayarify.backend.util.JwtAuthEntryPoint;
 import com.shayarify.backend.util.JwtAuthTokenFilter;
@@ -18,9 +17,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-//import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
-//import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
-//import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -42,21 +38,13 @@ public class SecurityConfig {
 
     @Autowired
     private JwtAuthTokenFilter jwtAuthTokenFilter;
-//
-//    @Autowired
-//    private CustomOAuth2UserService customOAuth2UserService;
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig)
             throws Exception {
         return authConfig.getAuthenticationManager();
     }
-//
-//    @Bean
-//    public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository() {
-//        return new HttpSessionOAuth2AuthorizationRequestRepository();
-//    }
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http)
